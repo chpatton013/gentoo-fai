@@ -1,0 +1,49 @@
+disk:
+# parted --align=optimal -- /dev/sda mklabel gpt
+- device: /dev/sda
+  label: gpt
+  unit: mib
+  start: 1
+  partitions:
+  # parted --align=optimal -- /dev/sda unit mib mkpart primary 1 3 name 1 grub set 1 bios_grub on
+  - type: primary
+    size: 2
+    name: grub
+    flags:
+    - bios_grub: on
+  # parted --align=optimal -- /dev/sda unit mib mkpart primary 3 131 name 2 boot set 1 boot on
+  - type: primary
+    size: 128
+    name: boot
+    flags:
+    - boot: on
+  # parted --align=optimal -- /dev/sda unit mib mkpart primary 131 -1 name 3 root
+  - type: primary
+    size: -1
+    name: root
+
+raid:
+
+crypt:
+
+lvm:
+
+mkfs:
+# mkfs --type=vfat -F 32 /dev/sda2
+- device: /dev/sda2
+  type: vfat
+  options: -F 32
+# mkfs --type=ext4 /dev/sda3
+- device: /dev/sda1
+  type: ext4
+  options: -F
+
+mount:
+# mkdir /mnt/gentoo/
+# mount /dev/sda3 /mnt/gentoo/
+- source: /dev/sda3
+  destination: /
+# mkdir /mnt/gentoo/boot
+# mount /dev/sda2 /mnt/gentoo/boot
+- source: /dev/sda2
+  destination: /boot
